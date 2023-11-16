@@ -5,13 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ph.edu.auf.realmdiscussionbarebones.databinding.DialogAddPetBinding
+import ph.edu.auf.realmdiscussionbarebones.models.Pet
+import ph.edu.auf.realmdiscussionbarebones.realm.RealmDatabase
 
 class AddPetDialog : DialogFragment() {
 
     private lateinit var binding: DialogAddPetBinding
     lateinit var refreshDataCallback: RefreshDataInterface
+    private var database = RealmDatabase()
 
 
     interface RefreshDataInterface{
@@ -61,6 +71,17 @@ class AddPetDialog : DialogFragment() {
                 val ownerName = if(cbHasOwner.isChecked) edtOwner.text.toString() else ""
 
                 //TODO: DISCUSSION FOR REALM HERE
+
+                val coroutineContext = Job() + Dispatchers.IO
+                val scope = CoroutineScope(coroutineContext + CoroutineName("addPetToRealm"))
+                scope.launch(Dispatchers.IO) {
+                    database.addPet(edtPetName.text.toString(), petAge, edtPetType.text.toString(), ownerName)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(activity, "Pet has been added!", Toast.LENGTH_LONG).show()
+                        refreshDataCallback.refreshData()
+                        dialog?.dismiss()
+                    }
+                }
 
 
             }

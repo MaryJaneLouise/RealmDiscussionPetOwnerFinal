@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "RealmDiscussionBareBones"
+rootProject.name = "RealmDatabaseOwnerPet"
 include(":app")
  
