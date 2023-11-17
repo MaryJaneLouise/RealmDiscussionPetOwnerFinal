@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:hint="Pet Name"/>
 
-    <EditText
-        android:id="@+id/edt_pet_type"
+    <Spinner
+        android:id="@+id/pet_type_spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Pet type"/>
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/edt_age"

@@ -26,16 +26,16 @@
                 android:text="Pet Name: "/>
 
             <TextView
-                android:id="@+id/txt_pet_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pet type: "/>
-
-            <TextView
                 android:id="@+id/txt_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Age: "/>
+
+            <TextView
+                android:id="@+id/txt_pet_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet type: "/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -49,6 +49,18 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#F44336"
                 android:text="Remove" />
+
+            <Button
+                android:id="@+id/btn_adopt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adopt" />
+
+            <Button
+                android:id="@+id/btn_edit_pet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit details" />
 
         </LinearLayout>
 

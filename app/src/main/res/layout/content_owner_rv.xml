@@ -31,6 +31,25 @@
                 android:layout_height="wrap_content"
                 android:text="Number of pets: "/>
 
+            <TextView
+                android:id="@+id/txt_name_pets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name of pets: "/>
+
+            <Button
+                android:id="@+id/btn_remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F44336"
+                android:text="Remove" />
+
+            <Button
+                android:id="@+id/btn_edit_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit details" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

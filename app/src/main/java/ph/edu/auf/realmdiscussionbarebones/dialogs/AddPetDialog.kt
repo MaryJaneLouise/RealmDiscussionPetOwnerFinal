@@ -1,10 +1,13 @@
 package ph.edu.auf.realmdiscussionbarebones.dialogs
 
+import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import kotlinx.coroutines.CoroutineName
@@ -44,6 +47,20 @@ class AddPetDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding){
+            val spinner: Spinner = binding.petTypeSpinner
+            val petTypes = database.getAllPetTypes()
+
+            val petTypesArray = petTypes.map { it.petType }.toTypedArray()
+            val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, petTypesArray)
+            adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+
+
             cbHasOwner.setOnCheckedChangeListener{ _, isChecked ->
                 if(isChecked){
                     edtOwner.isEnabled = true
@@ -54,14 +71,13 @@ class AddPetDialog : DialogFragment() {
                     edtPetName.error = "Required"
                     return@setOnClickListener
                 }
-                if(edtAge.text.isNullOrEmpty()){
+
+                if(edtAge.text.isNullOrEmpty() || edtAge.text.toString().toInt() < 1){
                     edtAge.error = "Required"
                     return@setOnClickListener
                 }
-                if(edtPetType.text.isNullOrEmpty()){
-                    edtPetType.error = "Required"
-                    return@setOnClickListener
-                }
+
+
                 if(cbHasOwner.isChecked && edtOwner.text.isNullOrEmpty()){
                     edtOwner.error = "Required"
                     return@setOnClickListener
@@ -69,13 +85,14 @@ class AddPetDialog : DialogFragment() {
 
                 val petAge = edtAge.text.toString().toInt()
                 val ownerName = if(cbHasOwner.isChecked) edtOwner.text.toString() else ""
+                val selectedPetType = spinner.selectedItem as String
 
                 //TODO: DISCUSSION FOR REALM HERE
 
                 val coroutineContext = Job() + Dispatchers.IO
                 val scope = CoroutineScope(coroutineContext + CoroutineName("addPetToRealm"))
                 scope.launch(Dispatchers.IO) {
-                    database.addPet(edtPetName.text.toString(), petAge, edtPetType.text.toString(), ownerName)
+                    database.addPet(edtPetName.text.toString(), petAge, selectedPetType, ownerName)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(activity, "Pet has been added!", Toast.LENGTH_LONG).show()
                         refreshDataCallback.refreshData()

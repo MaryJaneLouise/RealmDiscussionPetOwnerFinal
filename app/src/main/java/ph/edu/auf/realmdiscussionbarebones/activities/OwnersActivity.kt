@@ -2,6 +2,9 @@ package ph.edu.auf.realmdiscussionbarebones.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -9,8 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.mongodb.kbson.BsonObjectId
 import ph.edu.auf.realmdiscussionbarebones.R
 import ph.edu.auf.realmdiscussionbarebones.adapters.OwnerAdapter
+import ph.edu.auf.realmdiscussionbarebones.adapters.PetAdapter
 import ph.edu.auf.realmdiscussionbarebones.databinding.ActivityOwnersBinding
 import ph.edu.auf.realmdiscussionbarebones.models.Owner
 import ph.edu.auf.realmdiscussionbarebones.models.Pet
@@ -18,7 +23,7 @@ import ph.edu.auf.realmdiscussionbarebones.realm.RealmDatabase
 import ph.edu.auf.realmdiscussionbarebones.realm.realmmodels.OwnerRealm
 import ph.edu.auf.realmdiscussionbarebones.realm.realmmodels.PetRealm
 
-class OwnersActivity : AppCompatActivity() {
+class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
     private lateinit var binding : ActivityOwnersBinding
     private lateinit var adapter: OwnerAdapter
     private lateinit var ownerList: ArrayList<Owner>
@@ -30,11 +35,38 @@ class OwnersActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         ownerList = arrayListOf()
-        adapter = OwnerAdapter(ownerList)
+        adapter = OwnerAdapter(ownerList, this, this)
 
         val layoutManger = LinearLayoutManager(this)
         binding.rvOwner.layoutManager = layoutManger
         binding.rvOwner.adapter = adapter
+
+        binding.edtSearchOwner.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val coroutineContext = Job() + Dispatchers.IO
+                val scope = CoroutineScope(coroutineContext + CoroutineName("SearchAuthors"))
+                scope.launch(Dispatchers.IO) {
+                    val result = database.getOwnerByName(binding.edtSearchOwner.text.toString().lowercase())
+                    val ownerList = arrayListOf<Owner>()
+                    ownerList.addAll(
+                        result.map {
+                            mapOwner(it)
+                        }
+                    )
+                    withContext(Dispatchers.Main) {
+                        adapter.updateList(ownerList)
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Nothing to do
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Nothing to do
+            }
+        })
     }
 
     override fun onResume() {
@@ -43,12 +75,42 @@ class OwnersActivity : AppCompatActivity() {
     }
 
     //TODO: REALM DISCUSSION HERE
+    override fun deleteOwner(id: String) {
+        //TODO: REALM DISCUSSION HERE
+        val coroutineContext = Job() + Dispatchers.IO
+        val scope = CoroutineScope(coroutineContext + CoroutineName("deleteOwner"))
+        scope.launch(Dispatchers.IO) {
+            database.deleteOwner(BsonObjectId(id))
+            getOwners()
+        }
+    }
+
     private fun mapOwner(owner: OwnerRealm): Owner {
         return Owner(
             id = owner.id.toHexString(),
             name = owner.name,
-            petCount = owner.pets.size
+            petCount = owner.pets.size,
+            pets = owner.pets.map { mapPet(it) }
         )
+    }
+
+    private fun mapPet(pet: PetRealm) : Pet {
+        return Pet(
+            id = pet.id.toHexString(),
+            name = pet.name,
+            petType = pet.petType,
+            age = pet.age,
+            ownerName = pet.owner?.name ?: ""
+        )
+    }
+
+    override fun updateOwner(owner: Owner, newName: String) {
+        val coroutineContext = Job() + Dispatchers.IO
+        val scope = CoroutineScope(coroutineContext + CoroutineName("updateOwner"))
+        scope.launch(Dispatchers.IO) {
+            database.updateOwner(owner, newName)
+            getOwners()
+        }
     }
 
     private fun getOwners() {
@@ -65,6 +127,14 @@ class OwnersActivity : AppCompatActivity() {
             )
             withContext(Dispatchers.Main) {
                 adapter.updateList(ownerList)
+
+                if (ownerList.isEmpty()) {
+                    binding.txtNoOwnersAvailable.visibility = View.VISIBLE
+                    binding.rvOwner.visibility = View.GONE
+                } else {
+                    binding.txtNoOwnersAvailable.visibility = View.GONE
+                    binding.rvOwner.visibility = View.VISIBLE
+                }
             }
         }
     }
