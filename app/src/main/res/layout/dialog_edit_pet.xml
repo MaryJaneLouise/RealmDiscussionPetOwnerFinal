@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/dialog_edit_pet_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit pet details"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/dialog_edit_pet_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet name*"/>
+
+        <EditText
+            android:id="@+id/dialog_edit_pet_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/dialog_edit_pet_age_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet age*"/>
+
+        <EditText
+            android:id="@+id/dialog_edit_pet_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/dialog_edit_pet_type_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet type*"/>
+
+        <Spinner
+            android:id="@+id/dialog_edit_pet_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:id="@+id/dialog_edit_pet_owner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet owner*"/>
+
+        <EditText
+            android:id="@+id/dialog_edit_pet_owner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"/>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

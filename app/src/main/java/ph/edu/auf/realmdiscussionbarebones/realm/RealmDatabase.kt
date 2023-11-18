@@ -116,7 +116,8 @@ class RealmDatabase {
         }
     }
 
-    suspend fun updatePet(pet: Pet, newPetName: String, newAge: Int, newOwnerName: String) {
+    // Updates the details of the Pet object
+    suspend fun updatePet(pet: Pet, newPetName: String, newAge: Int, newType: String, newOwnerName: String) {
         realm.write {
             // Find the pet to update
             val petResult: PetRealm? = realm.query<PetRealm>("id == $0", ObjectId(pet.id)).first().find()
@@ -129,6 +130,7 @@ class RealmDatabase {
                 petRealm?.apply {
                     this.name = newPetName
                     this.age = newAge
+                    this.petType = newType
                 }
 
                 petRealm?.owner?.pets?.remove(petRealm)
@@ -156,7 +158,6 @@ class RealmDatabase {
         }
     }
 
-
     // Delete Pet
     suspend fun deletePet(id: ObjectId) {
         realm.write {
@@ -168,6 +169,7 @@ class RealmDatabase {
         }
     }
 
+    // Updates the details for the Owner object
     suspend fun updateOwner(owner: Owner, newName: String) {
         realm.write {
             // Find the owner to update
@@ -184,7 +186,8 @@ class RealmDatabase {
             }
         }
     }
-    // Delete Author
+
+    // Delete owner
     suspend fun deleteOwner(id: ObjectId) {
         realm.write {
             query<OwnerRealm>("id == $0", id)
@@ -195,11 +198,13 @@ class RealmDatabase {
         }
     }
 
+    // Get all of the owners in a list
     fun getAllOwners() : List<OwnerRealm> {
         return realm.query<OwnerRealm>().find()
     }
 
-    // Search Query for Pets
+    // Search Query for owner
+    // [c] means ignore case
     fun getOwnerByName(name: String) : List<OwnerRealm> {
         return realm.query<OwnerRealm>("name CONTAINS[c] $0", name).find()
     }

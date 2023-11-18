@@ -55,12 +55,6 @@ class AddPetDialog : DialogFragment() {
             adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
 
-
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
-
-
-
             cbHasOwner.setOnCheckedChangeListener{ _, isChecked ->
                 if(isChecked){
                     edtOwner.isEnabled = true

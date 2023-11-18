@@ -109,12 +109,13 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
         pet: Pet,
         newPetName: String,
         newAge: Int,
+        newType: String,
         newOwnerName: String
     ) {
         val coroutineContext = Job() + Dispatchers.IO
         val scope = CoroutineScope(coroutineContext + CoroutineName("updatePetDetails"))
         scope.launch(Dispatchers.IO) {
-            database.updatePet(pet, newPetName, newAge, newOwnerName)
+            database.updatePet(pet, newPetName, newAge, newType, newOwnerName)
             getPets()
         }
     }

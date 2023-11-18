@@ -6,23 +6,29 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import ph.edu.auf.realmdiscussionbarebones.R
 import ph.edu.auf.realmdiscussionbarebones.RealmDiscussionApplication
 import ph.edu.auf.realmdiscussionbarebones.databinding.ContentPetRvBinding
 import ph.edu.auf.realmdiscussionbarebones.models.Pet
+import ph.edu.auf.realmdiscussionbarebones.realm.RealmDatabase
 
 class PetAdapter(private var petList: ArrayList<Pet>, private var context: Context, private var petAdapterCallback: PetAdapterInterface): RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
+    private var database = RealmDatabase()
 
     interface PetAdapterInterface{
         fun deletePet(id: String)
         fun updateOwnerForPet(pet: Pet, newOwnerName: String)
 
-        fun updatePet(pet: Pet, newPetName: String, newAge: Int, newOwnerName: String)
+        fun updatePet(pet: Pet, newPetName: String, newAge: Int, newType: String, newOwnerName: String)
     }
 
     inner class PetViewHolder(private val binding: ContentPetRvBinding): RecyclerView.ViewHolder(binding.root) {
@@ -38,7 +44,13 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                     txtAge.text = String.format("%s year old", itemData.age.toString())
                 }
 
+                // Checks if the type of pet is a dog or cat
                 txtPetType.text = String.format("%s", itemData.petType)
+                if (itemData.petType == "Dog") {
+                    petImage.setImageResource(R.drawable.dog)
+                } else {
+                    petImage.setImageResource(R.drawable.cat)
+                }
 
                 // Checks each pet if they have owners or none
                 if (itemData.ownerName.isNotEmpty()) {
@@ -52,23 +64,30 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                     // Adds an owner for the selected pet
                     btnAdopt.setOnClickListener {
                         val builder = AlertDialog.Builder(context)
-                        builder.setTitle("Add owner to ${itemData.name}")
+                        val inflater = LayoutInflater.from(context)
+                        val view = inflater.inflate(R.layout.dialog_add_owner_to_pet, null)
 
-                        val input = EditText(context)
-                        input.inputType = InputType.TYPE_CLASS_TEXT
-                        builder.setView(input)
+                        val title = view.findViewById<TextView>(R.id.dialog_add_owner_title)
+                        val input = view.findViewById<EditText>(R.id.dialog_add_owner_name)
+
+                        title.text = "Add owner to ${itemData.name}"
+                        builder.setView(view)
 
                         builder.setPositiveButton("Add owner") { dialog, _ ->
                             val newOwnerName = input.text.toString()
                             if (newOwnerName.isNotEmpty()) {
-                                petAdapterCallback.updateOwnerForPet(itemData, newOwnerName)
+                                if (newOwnerName.isNullOrEmpty() || newOwnerName.isNullOrBlank()) {
+                                    Toast.makeText(context, "You cannot assign a blank owner.", Toast.LENGTH_SHORT).show()
+                                    dialog.cancel()
+                                } else {
+                                    petAdapterCallback.updateOwnerForPet(itemData, newOwnerName)
+                                    dialog.dismiss()
+                                }
                             }
-                            dialog.dismiss()
                         }
                         builder.setNegativeButton("Cancel") { dialog, _ ->
                             dialog.dismiss()
                         }
-
                         builder.show()
                     }
                 }
@@ -82,6 +101,7 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                         petList.removeAt(adapterPosition)
                         notifyItemRemoved(adapterPosition)
                         petAdapterCallback.deletePet(itemData.id)
+                        Toast.makeText(context, "The selected pet has been deleted successfully!", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
                     }
                     builder.setNegativeButton("No") {dialog, _ ->
@@ -93,36 +113,53 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                 // Edit the details for the pet
                 btnEditPet.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
-                    builder.setTitle("Edit details for ${itemData.name}")
+                    val inflater = LayoutInflater.from(context)
+                    val view = inflater.inflate(R.layout.dialog_edit_pet, null)
 
-                    val layout = LinearLayout(context)
-                    layout.orientation = LinearLayout.VERTICAL
+                    builder.setView(view)
 
-                    val inputName = EditText(context)
-                    inputName.inputType = InputType.TYPE_CLASS_TEXT
+                    val inputName = view.findViewById<EditText>(R.id.dialog_edit_pet_name)
+                    val inputAge = view.findViewById<EditText>(R.id.dialog_edit_pet_age)
+                    val inputType = view.findViewById<Spinner>(R.id.dialog_edit_pet_type)
+                    val inputNewOwner = view.findViewById<EditText>(R.id.dialog_edit_pet_owner)
+
+                    val spinner: Spinner = inputType
+                    val petTypes = database.getAllPetTypes()
+
+                    val petTypesArray = petTypes.map { it.petType }.toTypedArray()
+                    val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, petTypesArray)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinner.adapter = adapter
+
+                    val selectedItemPosition = petTypesArray.indexOf(itemData.petType)
+
+                    // Set the existing values
                     inputName.setText("${itemData.name}")
-                    layout.addView(inputName)
-
-                    val inputAge = EditText(context)
-                    inputAge.inputType = InputType.TYPE_CLASS_TEXT
                     inputAge.setText("${itemData.age}")
-                    layout.addView(inputAge)
-
-                    val inputNewOwner = EditText(context)
-                    inputNewOwner.inputType = InputType.TYPE_CLASS_TEXT
+                    spinner.setSelection(selectedItemPosition)
                     inputNewOwner.setText("${itemData.ownerName}")
-                    layout.addView(inputNewOwner)
 
-                    builder.setView(layout)
+                    builder.setCancelable(false)
 
                     builder.setPositiveButton("Update details") { dialog, _ ->
                         val newName = inputName.text.toString()
-                        val newAge = inputAge.text.toString().toInt()
+                        val newAge = inputAge.text.toString()
                         val newOwner = inputNewOwner.text.toString()
+                        val selectedPetType = spinner.selectedItem as String
 
-                        if (newName.isNotEmpty() && (newAge > 1 && newAge.toString().isNotEmpty()) && newOwner.isNotEmpty()) {
-                            petAdapterCallback.updatePet(itemData, newName, newAge, newOwner)
-                            dialog.dismiss()
+                        if ((newName.isNotEmpty() && newName.isNotBlank()) &&
+                            (newAge >= "1" && newAge.isNotEmpty() && newAge.isNotBlank()) &&
+                            (newOwner.isNotEmpty() && newOwner.isNotBlank())) {
+                            if (newOwner.isNullOrEmpty() || newOwner.isNullOrBlank()) {
+                                Toast.makeText(context, "You cannot assign a blank owner.", Toast.LENGTH_SHORT).show()
+                                dialog.cancel()
+                            } else {
+                                petAdapterCallback.updatePet(itemData, newName, newAge.toInt(), selectedPetType, newOwner)
+                                Toast.makeText(context, "Pet details updated successfully!", Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                            }
+                        } else {
+                            Toast.makeText(context, "Fill the required fields.", Toast.LENGTH_SHORT).show()
                         }
                     }
                     builder.setNegativeButton("Cancel") { dialog, _ ->
@@ -131,7 +168,6 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
 
                     builder.show()
                 }
-
             }
 //            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 //                override fun onMove(
