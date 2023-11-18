@@ -21,7 +21,7 @@ import ph.edu.auf.realmdiscussionbarebones.databinding.ContentPetRvBinding
 import ph.edu.auf.realmdiscussionbarebones.models.Pet
 import ph.edu.auf.realmdiscussionbarebones.realm.RealmDatabase
 
-class PetAdapter(private var petList: ArrayList<Pet>, private var context: Context, private var petAdapterCallback: PetAdapterInterface): RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
+class PetAdapter(private var petList: ArrayList<Pet>, private var context: Context, var petAdapterCallback: PetAdapterInterface): RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
     private var database = RealmDatabase()
 
     interface PetAdapterInterface{
@@ -31,9 +31,8 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
         fun updatePet(pet: Pet, newPetName: String, newAge: Int, newType: String, newOwnerName: String)
     }
 
-    inner class PetViewHolder(private val binding: ContentPetRvBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class PetViewHolder(val binding: ContentPetRvBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(itemData : Pet) {
-
             with(binding){
                 txtPetName.text = String.format("%s", itemData.name)
 
@@ -169,42 +168,6 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                     builder.show()
                 }
             }
-//            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-//                override fun onMove(
-//                    recyclerView: RecyclerView,
-//                    viewHolder: RecyclerView.ViewHolder,
-//                    target: RecyclerView.ViewHolder
-//                ): Boolean {
-//                    // this method is called
-//                    // when the item is moved.
-//                    return false
-//                }
-//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                    // this method is called when we swipe our item to right direction.
-//                    // on below line we are getting the item at a particular position.
-//                    val deletedPet: Pet =
-//                        petList[viewHolder.adapterPosition]
-//
-//                    val position = viewHolder.adapterPosition
-//                    petList.removeAt(viewHolder.adapterPosition)
-//                    notifyItemRemoved(adapterPosition)
-//                    petAdapterCallback.deletePet(itemData.id)
-//
-//                    // Show snackbar to bring back the item
-//                    Snackbar.make(RealmDiscussionApplication.petRecyclerView, "Deleted " + deletedPet.name, Snackbar.LENGTH_LONG)
-//                        .setAction(
-//                            "Undo",
-//                            View.OnClickListener {
-//                                // adding on click listener to our action of snack bar.
-//                                // below line is to add our item to array list with a position.
-//                                petList.add(position, deletedPet)
-//
-//                                // below line is to notify item is
-//                                // added to our adapter class.
-//                                notifyItemInserted(position)
-//                            }).show()
-//                }
-//            }).attachToRecyclerView(RealmDiscussionApplication.petRecyclerView)
         }
     }
 

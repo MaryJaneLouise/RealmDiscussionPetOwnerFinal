@@ -1,11 +1,16 @@
 package ph.edu.auf.realmdiscussionbarebones.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +18,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
+import ph.edu.auf.realmdiscussionbarebones.RealmDiscussionApplication
 import ph.edu.auf.realmdiscussionbarebones.adapters.PetAdapter
 import ph.edu.auf.realmdiscussionbarebones.databinding.ActivityPetsBinding
 import ph.edu.auf.realmdiscussionbarebones.dialogs.AddPetDialog
@@ -33,8 +39,16 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
         binding = ActivityPetsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val pets = database.getAllPets()
         petList = arrayListOf()
+        petList.addAll(
+            pets.map {
+                mapPet(it)
+            }
+        )
+
         adapter = PetAdapter(petList,this, this)
+        getPets()
 
         val layoutManager = LinearLayoutManager(this)
         binding.rvPets.layoutManager = layoutManager
@@ -72,8 +86,27 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
                 // Nothing to do
             }
         })
-    }
 
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean { return false }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+
+                if (position != RecyclerView.NO_POSITION && position < petList.size) {
+                    val deletedPet: Pet = petList[viewHolder.adapterPosition]
+                    petList.removeAt(viewHolder.adapterPosition)
+                    adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                    adapter.petAdapterCallback.deletePet(deletedPet.id)
+                    Toast.makeText(this@PetsActivity, "The swiped pet has been deleted successfully!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }).attachToRecyclerView(binding.rvPets)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -159,24 +192,6 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
                     binding.txtNoPetsAvailable.visibility = View.GONE
                     binding.rvPets.visibility = View.VISIBLE
                 }
-            }
-        }
-    }
-
-    private fun getPetTypes() {
-        val coroutineContext = Job() + Dispatchers.IO
-        val scope = CoroutineScope(coroutineContext + CoroutineName("LoadAllPetType"))
-        scope.launch(Dispatchers.IO) {
-            val petType = database.getAllPetTypes()
-            val petTypeList = arrayListOf<PetType>()
-
-            petTypeList.addAll(
-                petType.map {
-                    mapPetType(it)
-                }
-            )
-            withContext(Dispatchers.Main) {
-                adapter.updatePetList(petList)
             }
         }
     }
