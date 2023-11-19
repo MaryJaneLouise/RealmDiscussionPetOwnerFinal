@@ -93,11 +93,12 @@ class AddPetDialog : DialogFragment() {
                         dialog?.dismiss()
                     }
                 }
+            }
 
-
+            // Makes the dialog cancel
+            btnCancel.setOnClickListener {
+                dialog?.cancel()
             }
         }
-
-
     }
 }

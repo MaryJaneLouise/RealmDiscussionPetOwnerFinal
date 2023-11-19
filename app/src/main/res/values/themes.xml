@@ -6,4 +6,6 @@
     </style>
 
     <style name="Theme.RealmDiscussionBareBones" parent="Base.Theme.RealmDiscussionBareBones" />
+
+
 </resources>

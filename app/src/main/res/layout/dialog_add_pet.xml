@@ -4,43 +4,105 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginBottom="10dp"
+        android:text="Add pet to the database"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pet name*"/>
 
     <EditText
         android:id="@+id/edt_pet_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Pet Name"/>
+        android:layout_marginBottom="10dp"/>
 
-    <Spinner
-        android:id="@+id/pet_type_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/edt_age"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="Pet Age"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:layout_marginEnd="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet age*"/>
 
-    <CheckBox
-        android:id="@+id/cb_has_owner"
+            <EditText
+                android:id="@+id/edt_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet type*"/>
+            <Spinner
+                android:id="@+id/pet_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Has owner?"/>
+        android:text="Pet owner"/>
 
     <EditText
         android:id="@+id/edt_owner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Owner name"
         android:enabled="false"/>
 
-    <Button
+    <CheckBox
+        android:id="@+id/cb_has_owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check this if the pet has an owner."
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_add"
-        android:text="Add pet"/>
+        android:orientation="horizontal"
+        android:gravity="end">
 
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@color/black"
+            android:background="@android:color/transparent"/>
+
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="Add"/>
+    </LinearLayout>
 </LinearLayout>
