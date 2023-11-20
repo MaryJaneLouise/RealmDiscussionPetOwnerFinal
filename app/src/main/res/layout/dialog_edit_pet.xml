@@ -29,30 +29,49 @@
             android:inputType="textPersonName"
             android:layout_marginBottom="10dp"/>
 
-        <TextView
-            android:id="@+id/dialog_edit_pet_age_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pet age*"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:layout_marginEnd="5dp">
+            <TextView
+                android:id="@+id/dialog_edit_pet_age_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet age*"/>
 
-        <EditText
-            android:id="@+id/dialog_edit_pet_age"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_marginBottom="10dp"/>
+            <EditText
+                android:id="@+id/dialog_edit_pet_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/dialog_edit_pet_type_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pet type*"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp">
+            <TextView
+                android:id="@+id/dialog_edit_pet_type_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet type*"/>
 
-        <Spinner
-            android:id="@+id/dialog_edit_pet_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"/>
+            <Spinner
+                android:id="@+id/dialog_edit_pet_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"/>
+        </LinearLayout>
+    </LinearLayout>
 
         <TextView
             android:id="@+id/dialog_edit_pet_owner_title"

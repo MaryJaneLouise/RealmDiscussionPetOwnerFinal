@@ -80,6 +80,7 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
                                     dialog.cancel()
                                 } else {
                                     petAdapterCallback.updateOwnerForPet(itemData, newOwnerName)
+                                    Toast.makeText(context, "Pet has been adopted successfully!", Toast.LENGTH_SHORT).show()
                                     dialog.dismiss()
                                 }
                             }

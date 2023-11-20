@@ -39,13 +39,7 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
         binding = ActivityPetsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pets = database.getAllPets()
         petList = arrayListOf()
-        petList.addAll(
-            pets.map {
-                mapPet(it)
-            }
-        )
 
         adapter = PetAdapter(petList,this, this)
         getPets()
@@ -163,21 +157,13 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
         )
     }
 
-    private fun mapPetType(petType: PetTypeRealm) : PetType {
-        return PetType(
-            id = petType.id.toHexString(),
-            petType = petType.petType,
-            type = petType.type
-        )
-    }
 
     private fun getPets() {
         val coroutineContext = Job() + Dispatchers.IO
         val scope = CoroutineScope(coroutineContext + CoroutineName("LoadAllPets"))
         scope.launch(Dispatchers.IO) {
             val pets = database.getAllPets()
-            val petList = arrayListOf<Pet>()
-
+            petList = arrayListOf()
             petList.addAll(
                 pets.map {
                     mapPet(it)
