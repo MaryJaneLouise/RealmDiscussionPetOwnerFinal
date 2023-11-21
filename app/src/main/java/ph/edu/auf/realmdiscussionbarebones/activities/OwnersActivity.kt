@@ -1,11 +1,16 @@
 package ph.edu.auf.realmdiscussionbarebones.activities
 
+import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +52,7 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
                 val scope = CoroutineScope(coroutineContext + CoroutineName("SearchAuthors"))
                 scope.launch(Dispatchers.IO) {
                     val result = database.getOwnerByName(binding.edtSearchOwner.text.toString().lowercase())
-                    val ownerList = arrayListOf<Owner>()
+                    ownerList = arrayListOf()
                     ownerList.addAll(
                         result.map {
                             mapOwner(it)
@@ -67,6 +72,38 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
                 // Nothing to do
             }
         })
+
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean { return false }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+
+                if (position != RecyclerView.NO_POSITION && position < ownerList.size) {
+                    val builder = AlertDialog.Builder(this@OwnersActivity)
+                    builder.setMessage("Are you sure you want to delete this owner?")
+                    builder.setTitle("Warning!")
+                    builder.setPositiveButton("Yes") { dialog, _ ->
+                        val deletedOwner: Owner = ownerList[viewHolder.adapterPosition]
+                        ownerList.removeAt(viewHolder.adapterPosition)
+                        adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                        adapter.ownerAdapterCallback.deleteOwner(deletedOwner.id)
+                        Toast.makeText(this@OwnersActivity, "The swiped owner has been deleted successfully!", Toast.LENGTH_SHORT).show()
+                    }
+                    builder.setNegativeButton("No") { dialog, _ ->
+                        adapter.notifyItemChanged(viewHolder.adapterPosition)
+                        dialog.dismiss()
+                    }
+                    builder.show()
+                }
+            }
+        }).attachToRecyclerView(binding.rvOwner)
+
     }
 
     override fun onResume() {
@@ -118,7 +155,7 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
         val scope = CoroutineScope(coroutineContext + CoroutineName("LoadAllOwners"))
         scope.launch(Dispatchers.IO) {
             val owners = database.getAllOwners()
-            val ownerList = arrayListOf<Owner>()
+            ownerList = arrayListOf<Owner>()
 
             ownerList.addAll(
                 owners.map {

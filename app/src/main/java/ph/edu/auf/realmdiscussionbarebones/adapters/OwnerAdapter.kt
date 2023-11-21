@@ -13,7 +13,7 @@ import ph.edu.auf.realmdiscussionbarebones.R
 import ph.edu.auf.realmdiscussionbarebones.databinding.ContentOwnerRvBinding
 import ph.edu.auf.realmdiscussionbarebones.models.Owner
 
-class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context: Context, private var ownerAdapterCallback: OwnerAdapterInterface) : RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {
+class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context: Context, var ownerAdapterCallback: OwnerAdapterInterface) : RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {
 
     interface OwnerAdapterInterface {
         fun deleteOwner(id: String)

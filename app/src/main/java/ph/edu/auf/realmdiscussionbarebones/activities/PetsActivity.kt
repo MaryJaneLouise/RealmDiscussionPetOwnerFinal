@@ -1,6 +1,8 @@
 package ph.edu.auf.realmdiscussionbarebones.activities
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -54,13 +56,18 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
             addPetDialog.show(supportFragmentManager,null)
         }
 
+        binding.fabOwner.setOnClickListener {
+            val intent = Intent(this,OwnersActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val coroutineContext = Job() + Dispatchers.IO
                 val scope = CoroutineScope(coroutineContext + CoroutineName("SearchPets"))
                 scope.launch(Dispatchers.IO) {
                     val result = database.getPetsByName(binding.edtSearch.text.toString().lowercase())
-                    val petList = arrayListOf<Pet>()
+                    petList = arrayListOf()
                     petList.addAll(
                         result.map {
                             mapPet(it)
@@ -92,11 +99,21 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
                 val position = viewHolder.adapterPosition
 
                 if (position != RecyclerView.NO_POSITION && position < petList.size) {
-                    val deletedPet: Pet = petList[viewHolder.adapterPosition]
-                    petList.removeAt(viewHolder.adapterPosition)
-                    adapter.notifyItemRemoved(viewHolder.adapterPosition)
-                    adapter.petAdapterCallback.deletePet(deletedPet.id)
-                    Toast.makeText(this@PetsActivity, "The swiped pet has been deleted successfully!", Toast.LENGTH_SHORT).show()
+                    val builder = AlertDialog.Builder(this@PetsActivity)
+                    builder.setMessage("Are you sure you want to delete this pet?")
+                    builder.setTitle("Warning!")
+                    builder.setPositiveButton("Yes"){dialog, _ ->
+                        val deletedPet: Pet = petList[viewHolder.adapterPosition]
+                        petList.removeAt(viewHolder.adapterPosition)
+                        adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                        adapter.petAdapterCallback.deletePet(deletedPet.id)
+                        Toast.makeText(this@PetsActivity, "The swiped pet has been deleted successfully!", Toast.LENGTH_SHORT).show()
+                    }
+                    builder.setNegativeButton("No") {dialog, _ ->
+                        adapter.notifyItemChanged(viewHolder.adapterPosition)
+                        dialog.dismiss()
+                    }
+                    builder.show()
                 }
             }
         }).attachToRecyclerView(binding.rvPets)
