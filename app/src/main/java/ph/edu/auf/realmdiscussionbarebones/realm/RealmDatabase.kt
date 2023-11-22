@@ -1,10 +1,14 @@
 package ph.edu.auf.realmdiscussionbarebones.realm
 
+import android.util.Log
+import android.widget.Toast
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import ph.edu.auf.realmdiscussionbarebones.models.Owner
 import ph.edu.auf.realmdiscussionbarebones.models.Pet
@@ -170,18 +174,20 @@ class RealmDatabase {
     }
 
     // Updates the details for the Owner object
+    // It cannot update once it results of an exact name, thus cancelling the update
     suspend fun updateOwner(owner: Owner, newName: String) {
         realm.write {
-            // Find the owner to update
-            val ownerResult: OwnerRealm? = realm.query<OwnerRealm>("id == $0", ObjectId(owner.id)).first().find()
+            val existingOwner: OwnerRealm? = realm.query<OwnerRealm>("name == $0", newName).first().find()
 
-            if (ownerResult != null) {
-                // If the owner exists
-                val ownerRealm = findLatest(ownerResult)
+            if (existingOwner == null) {
+                val ownerResult: OwnerRealm? = realm.query<OwnerRealm>("id == $0", ObjectId(owner.id)).first().find()
 
-                // Update the owner data
-                ownerRealm?.apply {
-                    this.name = newName
+                if (ownerResult != null) {
+                    val ownerRealm = findLatest(ownerResult)
+
+                    ownerRealm?.apply {
+                        this.name = newName
+                    }
                 }
             }
         }

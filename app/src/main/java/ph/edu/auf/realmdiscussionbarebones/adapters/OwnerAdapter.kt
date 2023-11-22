@@ -95,6 +95,7 @@ class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context:
                             dialog.cancel()
                         }
                     }
+
                     builder.setNegativeButton("Cancel") { dialog, _ ->
                         dialog.dismiss()
                     }

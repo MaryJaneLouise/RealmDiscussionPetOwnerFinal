@@ -147,6 +147,7 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
         scope.launch(Dispatchers.IO) {
             database.updateOwner(owner, newName)
             getOwners()
+
         }
     }
 
@@ -155,7 +156,7 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
         val scope = CoroutineScope(coroutineContext + CoroutineName("LoadAllOwners"))
         scope.launch(Dispatchers.IO) {
             val owners = database.getAllOwners()
-            ownerList = arrayListOf<Owner>()
+            ownerList = arrayListOf()
 
             ownerList.addAll(
                 owners.map {
