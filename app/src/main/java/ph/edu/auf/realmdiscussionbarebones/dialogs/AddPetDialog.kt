@@ -72,7 +72,7 @@ class AddPetDialog : DialogFragment() {
                 }
 
 
-                if(cbHasOwner.isChecked && edtOwner.text.isNullOrEmpty()){
+                if(cbHasOwner.isChecked && edtOwner.text.isNullOrEmpty() && edtOwner.text.isNullOrBlank()){
                     edtOwner.error = "Required"
                     return@setOnClickListener
                 }

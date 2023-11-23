@@ -67,7 +67,7 @@ class RealmDatabase {
 
             val managePet = copyToRealm(pet)
 
-            if (ownerName.isNotEmpty()) {
+            if (ownerName.isNotBlank() || ownerName.isNotEmpty()) {
                 // Check if there's an owner
                 val ownerResult: OwnerRealm? = realm.query<OwnerRealm>("name == $0", ownerName).first().find()
 
@@ -139,7 +139,7 @@ class RealmDatabase {
 
                 petRealm?.owner?.pets?.remove(petRealm)
 
-                if (newOwnerName.isNotEmpty()) {
+                if (newOwnerName.isNotBlank() || newOwnerName.isNotEmpty()) {
                     // Check if there's an owner
                     val ownerResult: OwnerRealm? = realm.query<OwnerRealm>("name == $0", newOwnerName).first().find()
 
