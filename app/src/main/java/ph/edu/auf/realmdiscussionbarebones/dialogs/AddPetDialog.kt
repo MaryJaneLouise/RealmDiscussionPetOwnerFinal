@@ -95,10 +95,10 @@ class AddPetDialog : DialogFragment() {
                 }
             }
 
-            // Makes the dialog cancel
-            btnCancel.setOnClickListener {
-                dialog?.cancel()
-            }
+                // Makes the dialog cancel
+                btnCancel.setOnClickListener {
+                    dialog?.cancel()
+                }
         }
     }
 }
