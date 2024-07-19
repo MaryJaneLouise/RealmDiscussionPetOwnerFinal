@@ -2,11 +2,13 @@ package ph.edu.auf.realmdiscussionbarebones.adapters
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.Configuration
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import ph.edu.auf.realmdiscussionbarebones.R
@@ -14,6 +16,7 @@ import ph.edu.auf.realmdiscussionbarebones.databinding.ContentOwnerRvBinding
 import ph.edu.auf.realmdiscussionbarebones.models.Owner
 
 class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context: Context, var ownerAdapterCallback: OwnerAdapterInterface) : RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {
+    private var buttonVisible = false
 
     interface OwnerAdapterInterface {
         fun deleteOwner(id: String)
@@ -21,10 +24,31 @@ class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context:
         fun updateOwner(owner: Owner, newName: String)
     }
     inner class OwnerViewHolder(private val binding: ContentOwnerRvBinding): RecyclerView.ViewHolder(binding.root){
+        val imgOwner = binding.ownerImage
+
         fun bind(itemData: Owner){
             val ownerListSort = listOf(itemData)
             val sortedOwnerList = ownerListSort.sortedWith(compareBy({ it.pets.isEmpty() }, { it.name }))
+
+            // Sets the buttons to be invisible when the activity launched
+            buttonVisible = false
+            binding.buttonsOwnerAction.visibility = View.GONE
+
+            // Updates the color of the icon of the owner whether the phone is dark mode or not
+            updateOwnerImageForTheme(imgOwner)
+
             with(binding){
+                cvOwner.setOnClickListener {
+                    if (!buttonVisible) {
+                        binding.buttonsOwnerAction.visibility = View.VISIBLE
+
+                        buttonVisible = true
+                    } else {
+                        binding.buttonsOwnerAction.visibility = View.GONE
+
+                        buttonVisible = false
+                    }
+                }
                 // Checks if the owner has a pet or none
                 if (itemData.pets.isNotEmpty()) {
                     txtOwnerName.text = String.format("%s",itemData.name)
@@ -102,6 +126,21 @@ class OwnerAdapter(private var ownerList: ArrayList<Owner>, private var context:
 
                     builder.show()
                 }
+            }
+        }
+
+        // A function that converts images to dark or light mode
+        private fun updateOwnerImageForTheme(imgOwner: ImageView) {
+            val isDarkMode = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> true
+                Configuration.UI_MODE_NIGHT_NO -> false
+                else -> false
+            }
+
+            if (isDarkMode) {
+                imgOwner.setImageResource(R.drawable.ic_person_white)
+            } else {
+                imgOwner.setImageResource(R.drawable.ic_person)
             }
         }
     }

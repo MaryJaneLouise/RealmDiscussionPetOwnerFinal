@@ -74,6 +74,11 @@ class PetsActivity : AppCompatActivity() , AddPetDialog.RefreshDataInterface, Pe
                         }
                     )
                     withContext(Dispatchers.Main) {
+                        if (petList.isEmpty()) {
+                            binding.txtNoPetsSearch.visibility = View.VISIBLE
+                        } else {
+                            binding.txtNoPetsSearch.visibility = View.GONE
+                        }
                         adapter.updatePetList(petList)
                     }
                 }

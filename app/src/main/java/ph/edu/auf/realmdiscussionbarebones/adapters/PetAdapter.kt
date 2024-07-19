@@ -23,6 +23,7 @@ import ph.edu.auf.realmdiscussionbarebones.realm.RealmDatabase
 
 class PetAdapter(private var petList: ArrayList<Pet>, private var context: Context, var petAdapterCallback: PetAdapterInterface): RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
     private var database = RealmDatabase()
+    private var buttonVisible = false
 
     interface PetAdapterInterface{
         fun deletePet(id: String)
@@ -34,6 +35,22 @@ class PetAdapter(private var petList: ArrayList<Pet>, private var context: Conte
     inner class PetViewHolder(val binding: ContentPetRvBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(itemData : Pet) {
             with(binding){
+                // Sets the buttons to be invisible
+                buttonVisible = false
+                buttonsPetAction.visibility = View.GONE
+
+                cvPets.setOnClickListener {
+                    if (!buttonVisible) {
+                        buttonsPetAction.visibility = View.VISIBLE
+
+                        buttonVisible = true
+                    } else {
+                        buttonsPetAction.visibility = View.GONE
+
+                        buttonVisible = false
+                    }
+                }
+
                 txtPetName.text = String.format("%s", itemData.name)
 
                 // Checks each pet if their age is 1 or above

@@ -38,6 +38,14 @@
             android:text="There is no owner available."
             android:gravity="center" />
 
+        <TextView
+            android:id="@+id/txt_no_owners_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:text="No owners found on the database."
+            android:gravity="center" />
+
     </LinearLayout>
 
 

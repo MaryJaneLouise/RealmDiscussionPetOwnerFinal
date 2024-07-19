@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_forecast"
+        android:id="@+id/cv_owner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="2dp"
@@ -26,8 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="15dp">
+                android:gravity="center_vertical">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -65,13 +64,15 @@
                 android:id="@+id/txt_name_pets"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
                 android:textSize="15sp"
                 android:text="Pet list\n• Jericho | Dog | 22 years old"/>
 
             <LinearLayout
+                android:id="@+id/buttons_owner_action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
                 <Button
                     android:id="@+id/btn_edit_owner"

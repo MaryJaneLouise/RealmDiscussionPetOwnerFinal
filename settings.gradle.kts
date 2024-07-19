@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "RealmDatabaseOwnerPet"
+rootProject.name = "Purrfect Pals"
 include(":app")
  

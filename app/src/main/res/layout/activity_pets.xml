@@ -33,6 +33,14 @@
             android:text="There is no pets available."
             android:gravity="center" />
 
+        <TextView
+            android:id="@+id/txt_no_pets_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No pets found from the search."
+            android:visibility="gone"
+            android:gravity="center" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_pets"
             android:layout_width="match_parent"

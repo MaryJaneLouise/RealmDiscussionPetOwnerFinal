@@ -59,6 +59,11 @@ class OwnersActivity : AppCompatActivity(), OwnerAdapter.OwnerAdapterInterface {
                         }
                     )
                     withContext(Dispatchers.Main) {
+                        if (ownerList.isEmpty()) {
+                            binding.txtNoOwnersSearch.visibility = View.VISIBLE
+                        } else {
+                            binding.txtNoOwnersSearch.visibility = View.GONE
+                        }
                         adapter.updateList(ownerList)
                     }
                 }
